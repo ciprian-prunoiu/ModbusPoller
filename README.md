@@ -84,6 +84,7 @@ Componente principale:
 
 Diagrama detaliata a componentelor:
 
+```
 +---------------------------------------------------------------------+
 |                          MODBUS POLLER                              |
 |                     (WinForms .NET Framework 4.8)                   |
@@ -135,7 +136,7 @@ Diagrama detaliata a componentelor:
    |                      |      |   DeviceId, Address,   |
    |                      |      |   Value                |
    +----------------------+      +------------------------+
-
+```
 
 Parametri Modbus folositi:
 
