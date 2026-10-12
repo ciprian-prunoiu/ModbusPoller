@@ -112,16 +112,16 @@ Diagrama detaliata a componentelor:
 |  |  +-------+--------+    +--------------------------------+   |    |
 |  +----------+--------------------------------------------------+    |
 |             |                                                       |
-|  +----------v-----------------------------------------------+        |
-|  |                    Acces date (Data)                     |        |
-|  |  +----------------+    +--------------------------------+|        |
-|  |  | ModbusReader   |    |      DataRepository            |        |
-|  |  | (NModbus 3.x)  |    |      (Dapper)                  |        |
-|  |  |                |    |                                |        |
-|  |  | TCP: 502       |    |  INSERT INTO ModbusLog         |        |
-|  |  | RTU: COMx      |    |  PRAGMA WAL + NORMAL           |        |
-|  |  +-------+--------+    +---------------+-----------------+        |
-|  +----------+-----------------------------+-----------------+        |
+|  +----------v-----------------------------------------------+       |
+|  |                    Acces date (Data)                     |       |
+|  |  +----------------+    +--------------------------------+|       |
+|  |  | ModbusReader   |    |      DataRepository             |       |
+|  |  | (NModbus 3.x)  |    |      (Dapper)                   |       |
+|  |  |                |    |                                 |       |
+|  |  | TCP: 502       |    |  INSERT INTO ModbusLog          |       |
+|  |  | RTU: COMx      |    |  PRAGMA WAL + NORMAL            |       |
+|  |  +-------+--------+    +---------------+-----------------+       |
+|  +----------+-----------------------------+-----------------+       |
 +-------------+-----------------------------+-------------------------+
               |                             |
               | Modbus TCP                  | SQL
@@ -140,16 +140,16 @@ Diagrama detaliata a componentelor:
 
 Parametri Modbus folositi:
 
-| Parametru | Valoare demo | Descriere |
-|-----------|--------------|-----------|
-| Protocol | Modbus TCP | Alternativ: Modbus RTU (serial) |
-| Port | 502 | Portul standard Modbus TCP |
-| Slave ID | 1 | Identificatorul dispozitivului |
-| Function Code | 03 | Read Holding Registers |
-| Start Address | 0 | Prima adresa citita |
-| Quantity | 10 | Numarul de registre |
-| Polling interval | 1000 ms | Frecventa de citire |
-| TCP timeout | 2000 ms | Timeout citire/scriere |
+| Parametru        | Valoare demo | Descriere                       |
+|------------------|--------------|---------------------------------|
+| Protocol         | Modbus TCP   | Alternativ: Modbus RTU (serial) |
+| Port             | 502          | Portul standard Modbus TCP      |
+| Slave ID         | 1            | Identificatorul dispozitivului  |
+| Function Code    | 03           | Read Holding Registers          |
+| Start Address    | 0            | Prima adresa citita             |
+| Quantity         | 10           | Numarul de registre             |
+| Polling interval | 1000 ms      | Frecventa de citire             |
+| TCP timeout      | 2000 ms      | Timeout citire/scriere          |
 
 ## 5. Fluxul de date
 
@@ -211,17 +211,17 @@ Oprire:
 
 ## 6. Tehnologii folosite
 
-| Componenta | Tehnologie | Versiune |
-|-----------|-----------|----------|
-| Framework | .NET Framework | 4.8 |
-| UI | Windows Forms | (inclus) |
-| Grafic | System.Windows.Forms.DataVisualization | (inclus) |
-| Comunicatie Modbus | NModbus | 3.0.81 |
-| Extensie RTU | NModbus.Serial | 3.0.83 |
-| ORM | Dapper | 2.1.35 |
-| Baza de date | SQLite | 3.x (via winsqlite3.dll) |
-| Driver SQLite | Microsoft.Data.Sqlite.Core | 8.0.0 |
-| Provider nativ | SQLitePCLRaw.bundle_winsqlite3 | 2.1.11 |
+| Componenta                | Tehnologie                                | Versiune                 |
+|---------------------------|-------------------------------------------|--------------------------|
+| Framework                 | .NET Framework                            | 4.8                      |
+| UI                        | Windows Forms                             | (inclus)                 |
+| Grafic                    | System.Windows.Forms.DataVisualization    | (inclus)                 |
+| Comunicatie Modbus        | NModbus                                   | 3.0.81                   |
+| Extensie RTU              | NModbus.Serial                            | 3.0.83                   |
+| ORM                       | Dapper                                    | 2.1.35                   |
+| Baza de date              | SQLite                                    | 3.x (via winsqlite3.dll) |
+| Driver SQLite             | Microsoft.Data.Sqlite.Core                | 8.0.0                    |
+| Provider nativ            | SQLitePCLRaw.bundle_winsqlite3            | 2.1.11                   |
 
 ## 7. Cerinte de sistem
 
@@ -250,23 +250,23 @@ Pentru testare:
 
 Baza de date `modbus.db` contine o singura tabela principala, plus indecsii asociati.
 
-| Tabela | Tip | Rol | Randuri estimate |
-|--------|-----|-----|------------------|
-| `ModbusLog` | Tabela principala | Stocheaza fiecare citire Modbus (un rand per registru per ciclu) | ~864.000/zi la 10 registre × 1 sec |
-| `sqlite_sequence` | Tabela interna SQLite | Gestioneaza AUTOINCREMENT pentru `ModbusLog.Id` | 1 |
-| `sqlite_stat1` | Tabela interna SQLite | Statistici pentru optimizatorul de query-uri | 0-5 |
+| Tabela             | Tip                    | Rol                                                                  | Randuri estimate                   |
+|--------------------|------------------------|----------------------------------------------------------------------|------------------------------------|
+| `ModbusLog`        | Tabela principala      | Stocheaza fiecare citire Modbus (un rand per registru per ciclu)     | ~864.000/zi la 10 registre × 1 sec |
+| `sqlite_sequence`  | Tabela interna SQLite  | Gestioneaza AUTOINCREMENT pentru `ModbusLog.Id`                      | 1                                  |
+| `sqlite_stat1`     | Tabela interna SQLite  | Statistici pentru optimizatorul de query-uri                         | 0-5                                |
 
 **Nota:** Tabelele `sqlite_*` sunt create automat de SQLite si nu trebuie modificate manual. Sunt incluse aici doar pentru completitudine.
 
 ### Structura tabelei `ModbusLog`
 
-| Coloana | Tip SQLite | Null | Default | Descriere | Exemplu |
-|---------|-----------|------|---------|-----------|---------|
-| `Id` | INTEGER | NOT NULL | AUTOINCREMENT | Cheie primara, generata automat | `1`, `2`, `3`, ... |
-| `Timestamp` | TEXT | NOT NULL | - | Momentul citirii, format ISO 8601 UTC | `2025-10-12T14:23:45.1234567Z` |
-| `DeviceId` | TEXT | NOT NULL | - | Identificatorul dispozitivului | `PLC-01` |
-| `RegisterAddress` | INTEGER | NOT NULL | - | Adresa registrului Modbus | `0` .. `65535` |
-| `Value` | INTEGER | NOT NULL | - | Valoarea citita (unsigned 16-bit) | `0` .. `65535` |
+| Coloana           | Tip SQLite | Null     | Default       | Descriere                             | Exemplu                           |
+|-------------------|------------|----------|---------------|---------------------------------------|-----------------------------------|
+| `Id`              | INTEGER    | NOT NULL | AUTOINCREMENT | Cheie primara, generata automat       | `1`, `2`, `3`, ...                |
+| `Timestamp`       | TEXT       | NOT NULL | -             | Momentul citirii, format ISO 8601 UTC | `2025-10-12T14:23:45.1234567Z`    |
+| `DeviceId`        | TEXT       | NOT NULL | -             | Identificatorul dispozitivului        | `PLC-01`                          |
+| `RegisterAddress` | INTEGER    | NOT NULL | -             | Adresa registrului Modbus             | `0` .. `65535`                    |
+| `Value`           | INTEGER    | NOT NULL | -             | Valoarea citita (unsigned 16-bit)     | `0` .. `65535`                    |
 
 **Cheie primara:** `Id` (INTEGER PRIMARY KEY AUTOINCREMENT)
 
@@ -299,15 +299,15 @@ Descarcare: [modbustools.com/modbus_slave.html](https://www.modbustools.com/modb
 ### Pasul 1: Pornire si conexiune
 
 1. Deschide aplicatia **Modbus Slave**
-2. Mergi la meniul **Connection ? Connect...** (sau apasa `F3`)
+2. Mergi la meniul **Connection -> Connect...** (sau apasa `F3`)
 3. In dialogul **Connection Setup** completeaza:
 
-| Camp | Valoare | Descriere |
-|------|---------|-----------|
-| Connection | `Modbus TCP/IP` | Protocolul de comunicatie |
-| IP Address | `127.0.0.1` | Localhost (aplicatia ruleaza pe acelasi PC) |
-| Port | `502` | Portul standard Modbus TCP |
-| IPv4 | ? bifat | Folosim IPv4 |
+| Camp       | Valoare         | Descriere                                   |
+|------------|-----------------|---------------------------------------------|
+| Connection | `Modbus TCP/IP` | Protocolul de comunicatie                   |
+| IP Address | `127.0.0.1`     | Localhost (aplicatia ruleaza pe acelasi PC) |
+| Port       | `502`           | Portul standard Modbus TCP                  |
+| IPv4       |  bifat          | Folosim IPv4                                |
 
 4. Apasa **OK**
 
@@ -315,15 +315,15 @@ Daca portul 502 este deja ocupat de alt proces, primesti eroare. In acest caz, s
 
 ### Pasul 2: Definirea registrelor
 
-1. Mergi la meniul **Setup ? Slave Definition...** (sau apasa `F8`)
+1. Mergi la meniul **Setup -> Slave Definition...** (sau apasa `F8`)
 2. In dialogul **Slave Definition** completeaza:
 
-| Camp | Valoare | Descriere |
-|------|---------|-----------|
-| Slave ID | `1` | Identificatorul dispozitivului (1..247) |
-| Function | `03 Holding Register (4x)` | Function code 03 - citire holding registers |
-| Address | `0` | Prima adresa citita |
-| Quantity | `10` | Numarul de registre expuse |
+| Camp     | Valoare                    | Descriere                                       |
+|----------|----------------------------|-------------------------------------------------|
+| Slave ID | `1`                        | Identificatorul dispozitivului (1..247)         |
+| Function | `03 Holding Register (4x)` | Function code 03 - citire holding registers     |
+| Address  | `0`                        | Prima adresa citita                             |
+| Quantity | `10`                       | Numarul de registre expuse                      |
 
 3. Apasa **OK**
 
@@ -333,20 +333,20 @@ Vei vedea o fereastra cu 10 randuri (registrele 0..9).
 
 Fa dublu-click pe fiecare celula din coloana `00000` si introdu valorile demo. Acestea simuleaza senzori industriali reali:
 
-| Addr | Name (alias) | Valoare demo | Interpretare | Unitate |
-|------|--------------|--------------|--------------|---------|
-| 0 | Temperatura | `235` | 23.5 °C | °C × 10 |
-| 1 | Presiune | `1013` | 1013 mbar | mbar |
-| 2 | Umiditate | `48` | 48 % | % |
-| 3 | Nivel rezervor | `750` | 750 mm | mm |
-| 4 | Debit | `125` | 12.5 L/min | L/min × 10 |
-| 5 | Tensiune | `230` | 230 V | V |
-| 6 | Curent | `45` | 4.5 A | A × 10 |
-| 7 | RPM Motor | `1450` | 1450 rpm | rpm |
-| 8 | Vibratie | `12` | 1.2 mm/s | mm/s × 10 |
-| 9 | Temp ulei | `678` | 67.8 °C | °C × 10 |
+| Addr | Name (alias)   | Valoare demo | Interpretare | Unitate    |
+|------|----------------|--------------|--------------|------------|
+| 0    | Temperatura    | `235`        | 23.5 °C      | °C × 10    |
+| 1    | Presiune       | `1013`       | 1013 mbar    | mbar       |
+| 2    | Umiditate      | `48`         | 48 %         | %          |
+| 3    | Nivel rezervor | `750`        | 750 mm       | mm         |
+| 4    | Debit          | `125`        | 12.5 L/min   | L/min × 10 |
+| 5    | Tensiune       | `230`        | 230 V        | V          |
+| 6    | Curent         | `45`         | 4.5 A        | A × 10     |
+| 7    | RPM Motor      | `1450`       | 1450 rpm     | rpm        |
+| 8    | Vibratie       | `12`         | 1.2 mm/s     | mm/s × 10  |
+| 9    | Temp ulei      | `678`        | 67.8 °C      | °C × 10    |
 
-**Sfat pentru populare rapida:** dupa ce introduci prima valoare si apesi `OK`, cursorul ramane pe celula. Apasa `?` (sageata jos) pentru a trece la urmatoarea, apoi `Enter` pentru a o edita. Astfel completezi toate 10 registre in mai putin de 30 de secunde.
+**Sfat pentru populare rapida:** dupa ce introduci prima valoare si apesi `OK`, cursorul ramane pe celula. Apasa (sageata jos) pentru a trece la urmatoarea, apoi `Enter` pentru a o edita. Astfel completezi toate 10 registre in mai putin de 30 de secunde.
 
 **Conventie de scalare:** Registrele Modbus stocheaza doar numere intregi (unsigned 16-bit, 0..65535). Pentru valori zecimale (temperatura 23.5 °C), se foloseste o conventie de scalare: valoarea din registru se imparte la 10. Aceasta este o practica standard in industrie.
 
@@ -356,11 +356,11 @@ Statusul din bara de titlu a Modbus Slave va arata `No connection` pana cand por
 
 Dupa ce rulezi aplicatia (`F5` in Visual Studio):
 
-| Indicator | Valoare | Semnificatie |
-|-----------|---------|--------------|
-| Status | `Connected` (verde) | Aplicatia s-a conectat cu succes |
-| Rx | Creste cu 1/secunda | Numarul de cereri Modbus primite |
-| Tabel | Valori actualizate | Registrele sunt citite corect |
+| Indicator | Valoare              | Semnificatie                      |
+|-----------|----------------------|-----------------------------------|
+| Status    | `Connected` (verde)  | Aplicatia s-a conectat cu succes  |
+| Rx        | Creste cu 1/secunda  | Numarul de cereri Modbus primite  |
+| Tabel     | Valori actualizate   | Registrele sunt citite corect     |
 
 Daca statusul ramane `No connection`:
 - Verifica ca aplicatia C# ruleaza (butonul `Start` apasat)
@@ -371,12 +371,12 @@ Daca statusul ramane `No connection`:
 
 In dialogul de editare a unei valori (dublu-click pe celula), poti bifa:
 
-| Optiune | Efect | Cand se foloseste |
-|---------|-------|-------------------|
-| Auto increment | Valoarea creste cu 1 la fiecare citire Modbus | Testare rampa liniara |
-| Auto decrement | Valoarea scade cu 1 la fiecare citire Modbus | Testare rampa descendenta |
+| Optiune        | Efect                                              | Cand se foloseste         |
+|----------------|----------------------------------------------------|---------------------------|
+| Auto increment | Valoarea creste cu 1 la fiecare citire Modbus      | Testare rampa liniara     |
+| Auto decrement | Valoarea scade cu 1 la fiecare citire Modbus       | Testare rampa descendenta |
 
-**Atentie:** aceste optiuni fac graficul sa arate ca o linie dreapta (creste/scade constant). Pentru un demo spectaculos, **NU le folosi** - foloseste in schimb scriptul Python de simulare senzori (vezi sec?iunea urmatoare).
+**Atentie:** aceste optiuni fac graficul sa arate ca o linie dreapta (creste/scade constant). Pentru un demo spectaculos, **NU le folosi** - foloseste in schimb scriptul Python de simulare senzori (vezi sectiunea urmatoare).
 
 ### Capturi de ecran
 
@@ -384,16 +384,16 @@ In dialogul de editare a unei valori (dublu-click pe celula), poti bifa:
 
 ### Rezumat configurare
 
-| Parametru | Valoare | Unde se seteaza |
-|-----------|---------|-----------------|
-| Protocol | Modbus TCP/IP | Modbus Slave ? Connection |
-| IP | 127.0.0.1 | Modbus Slave ? Connection |
-| Port | 502 | Modbus Slave ? Connection + App.config |
-| Slave ID | 1 | Modbus Slave ? Slave Definition + App.config |
-| Function | 03 (Holding) | Modbus Slave ? Slave Definition |
-| Start Address | 0 | Modbus Slave ? Slave Definition + App.config |
-| Quantity | 10 | Modbus Slave ? Slave Definition + App.config |
-| Valori | 235, 1013, 48, 750, 125, 230, 45, 1450, 12, 678 | Modbus Slave ? tabel |
+| Parametru     | Valoare                                             | Unde se seteaza                                 |
+|---------------|-----------------------------------------------------|-------------------------------------------------|
+| Protocol      | Modbus TCP/IP                                       | Modbus Slave - Connection                       |
+| IP            | 127.0.0.1                                           | Modbus Slave - Connection                       |
+| Port          | 502                                                 | Modbus Slave - Connection + App.config          |
+| Slave ID      | 1                                                   | Modbus Slave - Slave Definition + App.config    |
+| Function      | 03 (Holding)                                        | Modbus Slave - Slave Definition                 |
+| Start Address | 0                                                   | Modbus Slave - Slave Definition + App.config    |
+| Quantity      | 10                                                  | Modbus Slave - Slave Definition + App.config    |
+| Valori        | 235, 1013, 48, 750, 125, 230, 45, 1450, 12, 678     | Modbus Slave - tabel                            |
 
 Toate valorile din tabelul de mai sus trebuie sa corespunda cu cele din `App.config` pentru ca aplicatia sa citeasca corect.
 
@@ -407,21 +407,21 @@ Scriptul se afla in `scripts/simulate_sensors.py` si face parte din repository.
 
 Simuleaza 10 senzori industriali folosind o combinatie de:
 
-| Tehnica | Efect | Exemple de registre |
-|---------|-------|---------------------|
-| Sinusoide cu perioade diferite | Variatii line, periodice | Temperatura, Presiune |
-| Random walk (mers aleator) | Aspect natural, ca un senzor real | Umiditate, Debit |
-| Zgomot gaussian | Micro-fluctuatii (zgomot de masura) | Toate registrele |
-| Spike-uri ocazionale | Socuri, evenimente rare | Vibratie, Curent |
+| Tehnica                        | Efect                             | Exemple de registre     |
+|--------------------------------|-----------------------------------|-------------------------|
+| Sinusoide cu perioade diferite | Variatii line, periodice          | Temperatura, Presiune   |
+| Random walk (mers aleator)     | Aspect natural, ca un senzor real | Umiditate, Debit        |
+| Zgomot gaussian                | Micro-fluctuatii (zgomot de masura) | Toate registrele      |
+| Spike-uri ocazionale           | Socuri, evenimente rare           | Vibratie, Curent        |
 
 Rezultatul: graficul din dashboard arata ca un SCADA industrial real, cu curbe care urca si coboara natural, se intersecteaza, si au ocazional varfuri.
 
 ### Cerinte
 
-| Componenta | Versiune minima | Observatii |
-|------------|-----------------|------------|
-| Python | 3.8+ | Instalat din [python.org](https://www.python.org/downloads/) |
-| pymodbus | 3.6.8 | **Exact** aceasta versiune - vezi nota mai jos |
+| Componenta | Versiune minima | Observatii                                                   |
+|------------|-----------------|--------------------------------------------------------------|
+| Python     | 3.8+            | Instalat din [python.org](https://www.python.org/downloads/) |
+| pymodbus   | 3.6.8           | **Exact** aceasta versiune - vezi nota mai jos               |
 
 **Nota importanta despre versiunea pymodbus:**
 - Versiunea **3.6.8** este ultima cu API-ul stabil (`ModbusSequentialDataBlock` disponibil in `pymodbus.datastore`)
